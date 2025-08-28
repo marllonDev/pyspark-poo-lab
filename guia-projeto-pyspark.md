@@ -583,6 +583,8 @@ Este projeto está sob a licença MIT.
 ## 🚀 Passos para Execução
 
 ### 1. Preparação do Ambiente
+
+#### 1.1 Ambiente Virtual
 ```bash
 # 1. Criar ambiente virtual
 python -m venv venv
@@ -592,32 +594,34 @@ venv\Scripts\activate     # Windows
 
 # 2. Instalar dependências
 pip install -r requirements.txt
-
-# 3. Baixar datasets
-# - Pagamentos: https://github.com/infobarbosa/dataset-json-pagamentos
-# - Pedidos: https://github.com/infobarbosa/datasets-csv-pedidos
 ```
 
-### 2. Organização dos Dados
+#### 1.2 Verificação dos Datasets
 ```bash
-# Copiar datasets para a estrutura do projeto
-cp -r dataset-json-pagamentos/data/pagamentos/* projeto-final/data/input/pagamentos/
-cp -r datasets-csv-pedidos/data/pedidos/* projeto-final/data/input/pedidos/
+# 3. Verificar se os datasets estão presentes (já incluídos no repositório)
+ls -la data/input/pagamentos/
+ls -la data/input/pedidos/
 ```
 
-### 3. Execução dos Testes
+> **📋 Nota**: Os datasets já estão incluídos no repositório. Não é necessário baixá-los separadamente.
+
+
+
+### 2. Execução dos Testes
 ```bash
-cd projeto-final
-pytest tests/ -v
+cd pyspark-poo-lab
+source venv/bin/activate
+python -m pytest tests/test_order_processor.py -v
 ```
 
-### 4. Execução do Pipeline
+### 3. Execução do Pipeline
 ```bash
-cd projeto-final
+cd pyspark-poo-lab
+source venv/bin/activate
 python src/main.py
 ```
 
-### 5. Verificação dos Resultados
+### 4. Verificação dos Resultados
 ```bash
 # Verificar se o arquivo foi gerado
 ls -la data/output/relatorio_pedidos/

@@ -64,6 +64,8 @@ As configurações do Spark podem ser ajustadas em `src/config/spark_config.py`.
 
 ## Estrutura dos Dados
 
+> **📋 Nota**: Os datasets já estão incluídos no repositório em `data/input/`. Não é necessário baixá-los separadamente.
+
 ### Dataset de Pagamentos
 - **Formato**: JSON comprimido (*.json.gz)
 - **Caminho**: `data/input/pagamentos/`
@@ -131,9 +133,28 @@ O relatório é gerado em formato Parquet no diretório `data/output/relatorio_p
 ## Troubleshooting
 
 ### ⚠️ Problemas Comuns
-1. **Erro de Permissão do Python**: Use `source venv/bin/activate` antes de executar
-2. **Paths Incorretos**: Execute sempre a partir do diretório raiz do projeto
-3. **Dependências**: Certifique-se de ter o Java 8+ instalado para o PySpark
+
+1. **Erro de Permissão do Python**: 
+   ```bash
+   source venv/bin/activate
+   ```
+
+2. **Paths Incorretos**: 
+   - Execute sempre a partir do diretório raiz do projeto
+   - Verifique se está na pasta `pyspark-poo-lab/`
+
+3. **Dependências Faltando**:
+   ```bash
+   # Instalar Java 8+ para PySpark
+   java -version
+   
+   # Reinstalar dependências Python
+   pip install -r requirements.txt
+   ```
+
+4. **Erro "PATH_NOT_FOUND"**: 
+   - Verifique se você está no diretório correto do projeto
+   - Os datasets já estão incluídos no repositório em `data/input/`
 
 ## Autor
 [Seu Nome] - [Seu RM]
