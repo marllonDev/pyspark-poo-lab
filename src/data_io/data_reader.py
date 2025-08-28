@@ -41,6 +41,7 @@ class DataReader:
             self.logger.info(f"Lendo dataset de pagamentos de: {path}")
             return self.spark.read \
                 .option("compression", "gzip") \
+                .schema(self.get_pagamentos_schema()) \
                 .json(path)
         except Exception as e:
             self.logger.error(f"Erro ao ler pagamentos: {str(e)}")
@@ -52,9 +53,9 @@ class DataReader:
             self.logger.info(f"Lendo dataset de pedidos de: {path}")
             return self.spark.read \
                 .option("header", "true") \
-                .option("inferSchema", "false") \
                 .option("compression", "gzip") \
                 .option("sep", ";") \
+                .schema(self.get_pedidos_schema()) \
                 .csv(path)
         except Exception as e:
             self.logger.error(f"Erro ao ler pedidos: {str(e)}")
