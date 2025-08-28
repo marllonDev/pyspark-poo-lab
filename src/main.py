@@ -1,53 +1,49 @@
-from pyspark.sql import SparkSession
-from pyspark.sql import functions as F
-from pyspark.sql.types import StructType, StructField, StringType, DoubleType, TimestampType, LongType, ArrayType, DateType, FloatType
+from config.spark_config import SparkConfig
+from session.spark_session_manager import SparkSessionManager
+from orchestration.pipeline_orchestrator import PipelineOrchestrator
+import logging
 
-spark = SparkSession.builder.appName("Analise de Pedidos").getOrCreate()
+def main():
+    """Função principal - Aggregation Root"""
+    
+    # Configurar logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s'
+    )
+    logger = logging.getLogger(__name__)
+    
+    try:
+        logger.info("Iniciando aplicação")
+        
+        # 1. Criar configuração
+        config = SparkConfig()
+        
+        # 2. Criar e configurar sessão Spark
+        session_manager = SparkSessionManager(config)
+        spark = session_manager.create_session()
+        
+        # 3. Criar orquestrador
+        orchestrator = PipelineOrchestrator(spark)
+        
+        # 4. Definir caminhos dos dados
+        pagamentos_path = "data/input/pagamentos/*.json.gz"
+        pedidos_path = "data/input/pedidos/*.csv.gz"
+        output_path = "data/output/relatorio_pedidos"
+        
+        # 5. Executar pipeline
+        orchestrator.execute_pipeline(pagamentos_path, pedidos_path, output_path)
+        
+        logger.info("Aplicação executada com sucesso!")
+        
+    except Exception as e:
+        logger.error(f"Erro na execução da aplicação: {str(e)}")
+        raise
+    
+    finally:
+        # 6. Parar sessão Spark
+        if 'session_manager' in locals():
+            session_manager.stop_session()
 
-# Schema do dataframe de clientes
-schema_clientes = StructType(
-    [
-        StructField("id", LongType(), True),
-        StructField("nome", StringType(), True),
-        StructField("data_nasc", DateType(), True),
-        StructField("cpf", StringType(), True),
-        StructField("email", StringType(), True),
-        StructField("interesses", ArrayType(StringType()), True)
-    ]
-)
-# Abrir o dataframe de clientes
-clientes = spark.read.option("compression", "gzip").json("data/clientes.gz", schema=schema_clientes)
-
-clientes.show(5, truncate=False)
-
-# Schema do dataframe de pedidos
-schema_pedidos = StructType([
-    StructField("id_pedido", StringType(), True),
-    StructField("produto", StringType(), True),
-    StructField("valor_unitario", FloatType(), True),
-    StructField("quantidade", LongType(), True),
-    StructField("data_criacao", TimestampType(), True),
-    StructField("uf", StringType(), True),
-    StructField("id_cliente", LongType(), True)
-])
-
-# Abrir o dataframe de pedidos
-pedidos = spark.read.option("compression", "gzip").csv("data/pedidos.gz", header=True, schema=schema_pedidos, sep=";")
-pedidos = pedidos.withColumn("valor_total", F.col("valor_unitario") * F.col("quantidade"))
-pedidos.show(5, truncate=False)
-
-# Calcular o valor total de pedidos por cliente e filtrar os 10 maiores
-calculado = pedidos.groupBy("id_cliente") \
-    .agg(F.sum("valor_total").alias("valor_total")) \
-    .orderBy(F.desc("valor_total")) \
-    .limit(10)
-
-calculado.show(10, truncate=False)
-
-# Fazer a junção dos dataframes
-pedidos_clientes = calculado.join(clientes, clientes.id == calculado.id_cliente, "inner") \
-    .select(calculado.id_cliente, clientes.nome, clientes.email, calculado.valor_total)
-
-pedidos_clientes.show(20, truncate=False)
-
-spark.stop()
+if __name__ == "__main__":
+    main()
