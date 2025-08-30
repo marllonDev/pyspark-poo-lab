@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.types import StructType, StructField, StringType, DoubleType, BooleanType, TimestampType
+from pyspark.sql.types import StructType, StructField, StringType, DoubleType, BooleanType, TimestampType, LongType
 import logging
 
 class DataReader:
@@ -28,11 +28,11 @@ class DataReader:
         return StructType([
             StructField("ID_PEDIDO", StringType(), False),
             StructField("PRODUTO", StringType(), True),
-            StructField("VALOR_UNITARIO", StringType(), True),
-            StructField("QUANTIDADE", StringType(), True),
-            StructField("DATA_CRIACAO", StringType(), True),
+            StructField("VALOR_UNITARIO", DoubleType(), True),
+            StructField("QUANTIDADE", LongType(), True),
+            StructField("DATA_CRIACAO", TimestampType(), True),
             StructField("UF", StringType(), True),
-            StructField("ID_CLIENTE", StringType(), True)
+            StructField("ID_CLIENTE", LongType(), True)
         ])
     
     def read_pagamentos(self, path: str) -> DataFrame:
@@ -55,6 +55,7 @@ class DataReader:
                 .option("header", "true") \
                 .option("compression", "gzip") \
                 .option("sep", ";") \
+                .option("timestampFormat", "yyyy-MM-dd'T'HH:mm:ss") \
                 .schema(self.get_pedidos_schema()) \
                 .csv(path)
         except Exception as e:

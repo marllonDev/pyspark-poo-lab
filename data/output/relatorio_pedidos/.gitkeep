@@ -1,0 +1,2 @@
+# This file ensures the relatorio_pedidos directory is preserved in git
+# The PySpark pipeline will generate parquet files here

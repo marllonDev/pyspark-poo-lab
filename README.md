@@ -34,29 +34,36 @@ pyspark-poo-lab/
 ## Pré-requisitos
 - Python 3.8+
 - PySpark 3.4+
-- Java 8+
+- Java 17
 
 ## Instalação
 ```bash
-# 1. Ativar o ambiente virtual
+# 1. Criar o ambiente virtual (primeira vez)
+python3 -m venv venv
+
+# 2. Ativar o ambiente virtual
 source venv/bin/activate
 
-# 2. Instalar dependências (se necessário)
+# 3. Instalar dependências
 pip install -r requirements.txt
 ```
 
 ## Execução
 ```bash
-# Executar o pipeline completo
+# Ativar o ambiente virtual (deve ter sido criado no passo de instalação)
 source venv/bin/activate
-python src/main.py
+
+# Executar o pipeline completo
+python3 src/main.py
 ```
 
 ## Testes
 ```bash
-# Executar testes unitários
+# Ativar o ambiente virtual (deve ter sido criado no passo de instalação)
 source venv/bin/activate
-python -m pytest tests/test_order_processor.py -v
+
+# Executar testes unitários
+python3 -m pytest tests/test_order_processor.py -v
 ```
 
 ## Configuração
@@ -83,13 +90,13 @@ As configurações do Spark podem ser ajustadas em `src/config/spark_config.py`.
 - **Formato**: CSV comprimido (*.csv.gz)
 - **Caminho**: `data/input/pedidos/`
 - **Schema**:
-  - `ID_PEDIDO` (string): Identificador único do pedido
+  - `ID_PEDIDO` (string): Identificador único do pedido (UUID format)
   - `PRODUTO` (string): Nome do produto
-  - `VALOR_UNITARIO` (string): Valor unitário do produto
-  - `QUANTIDADE` (string): Quantidade do produto
-  - `DATA_CRIACAO` (string): Data de criação do pedido
-  - `UF` (string): Estado onde foi realizado o pedido
-  - `ID_CLIENTE` (string): Identificador do cliente
+  - `VALOR_UNITARIO` (double): Valor unitário do produto
+  - `QUANTIDADE` (long): Quantidade do produto
+  - `DATA_CRIACAO` (timestamp): Data de criação do pedido (ISO format: yyyy-MM-ddTHH:mm:ss)
+  - `UF` (string): Estado onde foi realizado o pedido (código de 2 letras)
+  - `ID_CLIENTE` (long): Identificador do cliente
 
 ## Saída
 O relatório é gerado em formato Parquet no diretório `data/output/relatorio_pedidos/`:
@@ -119,6 +126,8 @@ O relatório é gerado em formato Parquet no diretório `data/output/relatorio_p
 - **Filtros aplicados**: Pagamentos recusados e legítimos do ano 2025
 - **Arquivo de saída**: `data/output/relatorio_pedidos/part-*.parquet`
 - **Status**: ✅ Pipeline executado com sucesso
+- **Validação de Schema**: ✅ 36,000 registros validados (100% conformidade)
+- **Tipos de Dados**: ✅ Schema atualizado com tipos corretos (double, long, timestamp)
 
 ### 🔧 Arquitetura Implementada
 - ✅ **Orientação a Objetos**: Todas as classes implementadas
@@ -134,8 +143,12 @@ O relatório é gerado em formato Parquet no diretório `data/output/relatorio_p
 
 ### ⚠️ Problemas Comuns
 
-1. **Erro de Permissão do Python**: 
+1. **Erro de Permissão do Python ou Ambiente Virtual**: 
    ```bash
+   # Se o venv não existir, crie primeiro
+   python3 -m venv venv
+   
+   # Ative o ambiente virtual
    source venv/bin/activate
    ```
 
@@ -145,7 +158,7 @@ O relatório é gerado em formato Parquet no diretório `data/output/relatorio_p
 
 3. **Dependências Faltando**:
    ```bash
-   # Instalar Java 8+ para PySpark
+   # Instalar Java 17 para PySpark
    java -version
    
    # Reinstalar dependências Python
@@ -157,7 +170,11 @@ O relatório é gerado em formato Parquet no diretório `data/output/relatorio_p
    - Os datasets já estão incluídos no repositório em `data/input/`
 
 ## Autor
-[Seu Nome] - [Seu RM]
+Eduardo Castilho de Almeida Prado - RM: 358966
+Marllon Zucolotto de Almeida - RM: 358117
+Mateus Bonacina Zanguettin - RM: 358472
+Tiago Bento Amado - RM: 359183
+
 
 ## Licença
 Este projeto está sob a licença MIT.

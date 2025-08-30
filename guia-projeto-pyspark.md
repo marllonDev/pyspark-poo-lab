@@ -596,6 +596,7 @@ venv\Scripts\activate     # Windows
 pip install -r requirements.txt
 ```
 
+
 #### 1.2 Verificação dos Datasets
 ```bash
 # 3. Verificar se os datasets estão presentes (já incluídos no repositório)
