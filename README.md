@@ -33,8 +33,9 @@ pyspark-poo-lab/
 
 ## Pré-requisitos
 - Python 3.8+
-- PySpark 3.4+
-- Java 17
+- PySpark 3.4.0+
+- Pandas 1.5.0+
+- Java 8+ (recomendado Java 17)
 
 ## Instalação
 ```bash
@@ -69,6 +70,12 @@ python3 -m pytest tests/test_order_processor.py -v
 ## Configuração
 As configurações do Spark podem ser ajustadas em `src/config/spark_config.py`.
 
+### Configurações Spark Ativas
+- **Adaptive Query Execution**: Habilitado para otimização automática
+- **Partition Coalescing**: Reduz automaticamente o número de partições quando benéfico
+- **Skew Join**: Otimiza joins com dados desbalanceados
+- **Modo de Execução**: Local com todos os cores disponíveis (`local[*]`)
+
 ## Estrutura dos Dados
 
 > **📋 Nota**: Os datasets já estão incluídos no repositório em `data/input/`. Não é necessário baixá-los separadamente.
@@ -81,20 +88,20 @@ As configurações do Spark podem ser ajustadas em `src/config/spark_config.py`.
   - `forma_pagamento` (string): Forma de pagamento utilizada
   - `valor_pagamento` (double): Valor do pagamento
   - `status` (boolean): Status do pagamento (true=aprovado, false=recusado)
-  - `data_processamento` (string): Data de processamento do pagamento
+  - `data_processamento` (string): Data de processamento do pagamento (formato ISO)
   - `avaliacao_fraude` (object): Objeto contendo:
     - `fraude` (boolean): Indicador de fraude (true=fraudulento, false=legítimo)
     - `score` (double): Score de risco de fraude
 
 ### Dataset de Pedidos
-- **Formato**: CSV comprimido (*.csv.gz)
+- **Formato**: CSV comprimido (*.csv.gz) com separador `;` (ponto e vírgula)
 - **Caminho**: `data/input/pedidos/`
 - **Schema**:
-  - `ID_PEDIDO` (string): Identificador único do pedido (UUID format)
+  - `ID_PEDIDO` (string): Identificador único do pedido
   - `PRODUTO` (string): Nome do produto
   - `VALOR_UNITARIO` (double): Valor unitário do produto
   - `QUANTIDADE` (long): Quantidade do produto
-  - `DATA_CRIACAO` (timestamp): Data de criação do pedido (ISO format: yyyy-MM-ddTHH:mm:ss)
+  - `DATA_CRIACAO` (timestamp): Data de criação do pedido (formato ISO: yyyy-MM-ddTHH:mm:ss)
   - `UF` (string): Estado onde foi realizado o pedido (código de 2 letras)
   - `ID_CLIENTE` (long): Identificador do cliente
 
@@ -116,18 +123,18 @@ O relatório é gerado em formato Parquet no diretório `data/output/relatorio_p
 ## Status do Projeto
 
 ### ✅ Testes Realizados
-- **Testes Unitários**: ✅ PASSOU - Todas as funcionalidades da classe `OrderProcessor` testadas
-- **Pipeline Completo**: ✅ PASSOU - Pipeline executado com sucesso nos dados reais
-- **Verificação de Linting**: ✅ PASSOU - Nenhum erro de linting encontrado
-- **Estrutura de Dados**: ✅ PASSOU - Schema de saída conforme especificação
+- **Testes Unitários**: ✅ PASSOU - Todas as funcionalidades da classe `OrderProcessor` testadas (1 teste executado em ~5s)
+- **Pipeline Completo**: ✅ PASSOU - Pipeline executado com sucesso nos dados reais 
+- **Leitura de Dados**: ✅ PASSOU - Datasets de pagamentos (JSON.gz) e pedidos (CSV.gz) lidos corretamente
+- **Estrutura de Dados**: ✅ PASSOU - Schema de entrada e saída validados
 
 ### 📊 Resultados da Última Execução
-- **Total de registros processados**: 540 pedidos
-- **Filtros aplicados**: Pagamentos recusados e legítimos do ano 2025
-- **Arquivo de saída**: `data/output/relatorio_pedidos/part-*.parquet`
+- **Data da Execução**: 30 de Agosto de 2025
+- **Filtros aplicados**: Pagamentos recusados (`status=false`) e legítimos (`avaliacao_fraude.fraude=false`) do ano 2025
+- **Processamento**: Join entre datasets, cálculo de valor total, ordenação por estado/forma_pagamento/data
+- **Arquivo de saída**: `data/output/relatorio_pedidos/part-*.snappy.parquet` (~28KB)
 - **Status**: ✅ Pipeline executado com sucesso
-- **Validação de Schema**: ✅ 36,000 registros validados (100% conformidade)
-- **Tipos de Dados**: ✅ Schema atualizado com tipos corretos (double, long, timestamp)
+- **Formato de saída**: Parquet com compressão Snappy
 
 ### 🔧 Arquitetura Implementada
 - ✅ **Orientação a Objetos**: Todas as classes implementadas
@@ -143,31 +150,35 @@ O relatório é gerado em formato Parquet no diretório `data/output/relatorio_p
 
 ### ⚠️ Problemas Comuns
 
-1. **Erro de Permissão do Python ou Ambiente Virtual**: 
+1. **Erro de Ambiente Virtual**: 
    ```bash
-   # Se o venv não existir, crie primeiro
+   # Se o venv não existir ou estiver corrompido, recrie
+   rm -rf venv
    python3 -m venv venv
-   
-   # Ative o ambiente virtual
    source venv/bin/activate
+   pip install -r requirements.txt
    ```
 
-2. **Paths Incorretos**: 
-   - Execute sempre a partir do diretório raiz do projeto
-   - Verifique se está na pasta `pyspark-poo-lab/`
+2. **Paths ou Diretório de Execução**: 
+   - Execute sempre a partir do diretório raiz do projeto (`pyspark-poo-lab/`)
+   - Não execute de dentro de subpastas como `src/`
 
-3. **Dependências Faltando**:
+3. **Dependências ou Java**: 
    ```bash
-   # Instalar Java 17 para PySpark
+   # Verificar Java (necessário para PySpark)
    java -version
    
    # Reinstalar dependências Python
    pip install -r requirements.txt
    ```
 
-4. **Erro "PATH_NOT_FOUND"**: 
-   - Verifique se você está no diretório correto do projeto
-   - Os datasets já estão incluídos no repositório em `data/input/`
+4. **Warnings do Spark**: 
+   - Os warnings sobre "native-hadoop library" e "metadata directory" são normais e não afetam o funcionamento
+   - O pipeline funciona corretamente mesmo com esses warnings
+
+5. **Dados não encontrados**: 
+   - Os datasets estão incluídos no repositório em `data/input/`
+   - Verifique se os arquivos `.gz` estão presentes nas pastas `pagamentos/` e `pedidos/`
 
 ## Autor
 Eduardo Castilho de Almeida Prado - RM: 358966
