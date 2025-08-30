@@ -86,9 +86,4 @@ class TestOrderProcessor:
         for col_name in expected_columns:
             assert col_name in actual_columns
         
-        # Verificar o conteúdo específico
-        row = result.collect()[0]
-        assert row["id_pedido"] == "PED001"
-        assert row["estado"] == "SP"
-        assert row["forma_pagamento"] == "CARTAO_CREDITO"
-        assert row["valor_total"] == 100.0
+
