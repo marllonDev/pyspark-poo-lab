@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyspark-relatorio-pedidos"
+version = "1.0.0"
+description = "Projeto PySpark para geração de relatório de pedidos de venda com pagamentos recusados e classificados como legítimos, para o ano de 2025"
+authors = [
+    {name = "Eduardo Castilho de Almeida Prado", email = "rm358966@fiap.com.br"},
+    {name = "Marllon Zucolotto de Almeida", email = "rm358117@fiap.com.br"},
+    {name = "Mateus Bonacina Zanguettin", email = "rm358472@fiap.com.br"},
+    {name = "Tiago Bento Amado", email = "rm359183@fiap.com.br"}
+]
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.8"
+dependencies = [
+    "pyspark>=3.4.0",
+    "pandas>=1.5.0",
+    "pytest>=7.0.0"
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0.0", "black>=22.0.0", "flake8>=5.0.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
