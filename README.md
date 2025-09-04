@@ -181,9 +181,9 @@ O relatório é gerado em formato Parquet no diretório `data/output/relatorio_p
    - Verifique se os arquivos `.gz` estão presentes nas pastas `pagamentos/` e `pedidos/`
 
 ## Autor
-Eduardo Castilho de Almeida Prado - RM: 358966
-Marllon Zucolotto de Almeida - RM: 358117
-Mateus Bonacina Zanguettin - RM: 358472
+Eduardo Castilho de Almeida Prado - RM: 358966 <br>
+Marllon Zucolotto de Almeida - RM: 358117 <br>
+Mateus Bonacina Zanguettin - RM: 358472 <br>
 Tiago Bento Amado - RM: 359183
 
 
